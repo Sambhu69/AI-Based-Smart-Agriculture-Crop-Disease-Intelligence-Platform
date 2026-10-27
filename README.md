@@ -410,3 +410,4 @@ Made with ❤️ for smart, sustainable agriculture
 **[⭐ Star this repo](https://github.com/Sambhu69/AI-Based-Smart-Agriculture-Crop-Disease-Intelligence-Platform)** if you find it useful!
 
 </div>
+

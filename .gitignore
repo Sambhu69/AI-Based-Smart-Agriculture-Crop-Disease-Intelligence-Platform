@@ -1,26 +1,24 @@
 # Python
 __pycache__/
 *.py[cod]
-*.pyo
-*.pyd
-.Python
-*.egg-info/
-dist/
-build/
-*.egg
+*$py.class
+.ipynb_checkpoints/
+.vscode/
+.idea/
 
 # Virtual environment
 venv/
-env/
-.venv/
+ENV/
 
 # Dataset (too large for git - use Kaggle or manual download)
 data/
 
 # Model checkpoints & weights
 models/*.pth
-models/*.pt
-models/*.ckpt
+models/*.h5
+models/*.pkl
+mlruns/
+experiments/*
 
 # Outlier detection outputs
 suspicious_outliers/
@@ -34,6 +32,7 @@ notebooks/.ipynb_checkpoints/
 .idea/
 *.DS_Store
 Thumbs.db
+desktop.ini
 
 # Logs
 *.log
@@ -42,3 +41,4 @@ logs/
 # Temporary scripts
 check_deps.py
 inspect_data.py
+
