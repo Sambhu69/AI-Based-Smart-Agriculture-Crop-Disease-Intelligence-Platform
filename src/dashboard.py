@@ -868,38 +868,40 @@ with col_results:
             # Primary Diagnosis Card
             card_border_color = kb_entry["theme_color"]
             pill_class = "pill-green" if kb_entry["severity"] == "None" else ("pill-amber" if kb_entry["severity"] == "Moderate" else "pill-red")
+            conf_pct_num = min(100.0, primary["confidence"] * 100)
 
-            st.markdown(
-                f"""
-                <div class="nb-card" style="border-color: {card_border_color}; border-width: 3.5px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <span class="nb-pill {pill_class}">{kb_entry['status_tag']}</span>
-                        <span style="font-family: 'Space Grotesk', sans-serif; font-size: 1.25rem; font-weight: 800; color: {card_border_color};">
-                            {primary['confidence_pct']}
-                        </span>
-                    </div>
-                    <h2 style="font-size: 1.6rem; margin: 4px 0 2px 0;">{kb_entry['display_name']}</h2>
-                    <p style="font-size: 0.85rem; font-style: italic; color: #4B5563; margin-bottom: 12px;">
-                        Pathogen: {kb_entry['scientific_name']}
-                    </p>
-
-                    <p style="font-size: 0.9rem; color: #374151; margin-top: 14px; margin-bottom: 4px; line-height: 1.4;">
-                        <b>Diagnostic Overview:</b> {kb_entry['overview']}
-                    </p>
-                </div>
-                """,
-                unsafe_allow_html=True,
+            # Build visual primary diagnosis card with integrated progress bar & observation callout
+            card_html = (
+                f'<div class="nb-card" style="border-color: {card_border_color}; border-width: 3.5px;">'
+                f'<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">'
+                f'<span class="nb-pill {pill_class}">{kb_entry["status_tag"]}</span>'
+                f'<span style="font-family: \'Space Grotesk\', sans-serif; font-size: 1.3rem; font-weight: 800; color: {card_border_color};">{primary["confidence_pct"]}</span>'
+                f'</div>'
+                f'<h2 style="font-size: 1.65rem; margin: 0 0 4px 0;">{kb_entry["display_name"]}</h2>'
+                f'<div style="font-size: 0.85rem; color: #4B5563; margin-bottom: 14px;">'
+                f'<b>Pathogen:</b> <i>{kb_entry["scientific_name"]}</i>'
+                f'</div>'
+                f'<div style="margin-bottom: 14px;">'
+                f'<div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 800; color: #374151; margin-bottom: 5px;">'
+                f'<span>DIAGNOSTIC CONFIDENCE</span>'
+                f'<span style="color: {card_border_color};">{primary["confidence_pct"]}</span>'
+                f'</div>'
+                f'<div style="background: #E5E7EB; border: 2px solid #111827; border-radius: 8px; height: 20px; overflow: hidden; box-shadow: inset 1px 1px 2px rgba(0,0,0,0.1);">'
+                f'<div style="width: {conf_pct_num:.1f}%; height: 100%; background: {card_border_color}; border-radius: 5px;"></div>'
+                f'</div>'
+                f'</div>'
+                f'<div style="background: #F8FAFC; border: 2px solid #111827; border-radius: 8px; padding: 12px 14px; box-shadow: 2px 2px 0px #111827;">'
+                f'<div style="display: flex; align-items: center; gap: 6px; margin-bottom: 5px;">'
+                f'<span style="background: #111827; color: #FBBF24; font-size: 0.72rem; font-weight: 800; padding: 2px 8px; border-radius: 4px; font-family: \'Space Grotesk\', sans-serif;">[OBSERVATION]</span>'
+                f'<span style="font-size: 0.78rem; font-weight: 700; color: #475569; text-transform: uppercase;">Field Symptom Pattern</span>'
+                f'</div>'
+                f'<div style="font-size: 0.88rem; color: #1E293B; line-height: 1.45; font-weight: 500;">'
+                f'{kb_entry["overview"]}'
+                f'</div>'
+                f'</div>'
+                f'</div>'
             )
-
-            # Native Streamlit confidence progress bar
-            conf_val = min(1.0, primary['confidence'])
-            conf_color = kb_entry['theme_color']
-            st.markdown(
-                f'<p style="font-size:0.78rem;font-weight:700;color:#374151;margin:4px 0 2px 0;">'
-                f'CONFIDENCE &nbsp;<span style="color:{conf_color};font-size:0.9rem;">{primary["confidence_pct"]}</span></p>',
-                unsafe_allow_html=True
-            )
-            st.progress(conf_val)
+            st.markdown(card_html, unsafe_allow_html=True)
 
             # Agronomic Action Card
             st.markdown(
