@@ -25,7 +25,7 @@ import streamlit as st
 # -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="AgriVision AI | Crop Disease Intelligence",
-    page_icon="🌱",
+    page_icon="[AGRI]",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -46,7 +46,7 @@ SAMPLE_PRESETS = [
         "title": "Tomato: Healthy",
         "crop": "Tomato",
         "folder": "Tomato_healthy",
-        "icon": "🍅",
+        "icon": "[TOMATO]",
         "badge": "Healthy",
         "badge_color": "#10B981",
     },
@@ -55,7 +55,7 @@ SAMPLE_PRESETS = [
         "title": "Tomato: Early Blight",
         "crop": "Tomato",
         "folder": "Tomato_Early_blight",
-        "icon": "🍅",
+        "icon": "[TOMATO]",
         "badge": "Fungal Infection",
         "badge_color": "#F59E0B",
     },
@@ -64,7 +64,7 @@ SAMPLE_PRESETS = [
         "title": "Tomato: Late Blight",
         "crop": "Tomato",
         "folder": "Tomato_Late_blight",
-        "icon": "🍅",
+        "icon": "[TOMATO]",
         "badge": "High Risk",
         "badge_color": "#EF4444",
     },
@@ -73,7 +73,7 @@ SAMPLE_PRESETS = [
         "title": "Tomato: Yellow Leaf Curl",
         "crop": "Tomato",
         "folder": "Tomato__Tomato_YellowLeaf__Curl_Virus",
-        "icon": "🍅",
+        "icon": "[TOMATO]",
         "badge": "Viral / Vector",
         "badge_color": "#EF4444",
     },
@@ -82,7 +82,7 @@ SAMPLE_PRESETS = [
         "title": "Potato: Late Blight",
         "crop": "Potato",
         "folder": "Potato___Late_blight",
-        "icon": "🥔",
+        "icon": "[POTATO]",
         "badge": "Critical Risk",
         "badge_color": "#EF4444",
     },
@@ -91,7 +91,7 @@ SAMPLE_PRESETS = [
         "title": "Pepper: Bacterial Spot",
         "crop": "Pepper",
         "folder": "Pepper__bell___Bacterial_spot",
-        "icon": "🌶️",
+        "icon": "[PEPPER]",
         "badge": "Bacterial",
         "badge_color": "#F59E0B",
     },
@@ -280,7 +280,7 @@ DISEASE_KNOWLEDGE_BASE: Dict[str, Dict[str, Any]] = {
         "treatments": [
             "Target vector whiteflies (Bemisia tabaci) using yellow sticky cards and systemic imidacloprid.",
             "Install 50-mesh fine insect exclusion netting in high tunnels and greenhouses.",
-            "Rogue out and destroy infected plants immediately—viral infection has no chemical cure.",
+            "Rogue out and destroy infected plants immediately-viral infection has no chemical cure.",
             "Select TYLCV-resistant hybrids (e.g., Tycoon, Securitas) for future planting cycles.",
         ],
     },
@@ -343,7 +343,7 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: 12px;
     box-shadow: 5px 5px 0px #111827;
     padding: 24px;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -358,7 +358,7 @@ h1, h2, h3, h4, h5, h6 {
     border: 3px solid #111827;
     border-radius: 14px;
     box-shadow: 6px 6px 0px #111827;
-    padding: 28px 32px;
+    padding: 18px 24px;
     margin-bottom: 24px;
 }
 
@@ -398,27 +398,17 @@ h1, h2, h3, h4, h5, h6 {
     margin-bottom: 18px;
 }
 
-/* Progress Bar Container */
-.nb-progress-wrapper {
-    background: #E5E7EB;
-    border: 2px solid #111827;
-    border-radius: 8px;
-    height: 24px;
-    width: 100%;
+/* Streamlit Native Progress Bar Theming */
+div[data-testid="stProgress"] > div {
+    background: #E5E7EB !important;
+    border: 2px solid #111827 !important;
+    border-radius: 8px !important;
+    height: 20px !important;
     overflow: hidden;
-    margin: 8px 0;
-    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.1);
 }
-
-.nb-progress-bar {
-    height: 100%;
-    font-size: 0.75rem;
-    font-weight: 800;
-    color: #FFFFFF;
-    text-align: right;
-    padding-right: 8px;
-    line-height: 22px;
-    transition: width 0.4s ease;
+div[data-testid="stProgress"] > div > div {
+    border-radius: 6px !important;
+    height: 20px !important;
 }
 
 /* Sample Quick-Test Grid Card */
@@ -548,7 +538,7 @@ def get_sample_image(folder_name: str) -> Optional[Tuple[str, bytes]]:
 # Sidebar Navigation & Settings
 # -----------------------------------------------------------------------------
 with st.sidebar:
-    st.markdown("### ⚙️ SYSTEM SETTINGS")
+    st.markdown("### [SETTINGS] SYSTEM SETTINGS")
 
     backend_url = st.text_input(
         "Backend API URL",
@@ -565,7 +555,7 @@ with st.sidebar:
             f"""
             <div style="background-color: #ECFDF5; border: 2px solid #111827; border-radius: 8px; padding: 12px; box-shadow: 2px 2px 0px #111827; margin-bottom: 16px;">
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 1.2rem;">🟢</span>
+                    <span style="font-size: 1.2rem;">[OK]</span>
                     <div>
                         <strong style="color: #065F46; font-size: 0.9rem;">BACKEND ONLINE</strong><br>
                         <span style="font-size: 0.75rem; color: #047857;">Device: <b>{health_info.get('device', 'unknown').upper()}</b> | Epoch {health_info.get('checkpoint_epoch', 'N/A')}</span>
@@ -580,7 +570,7 @@ with st.sidebar:
             f"""
             <div style="background-color: #FEF2F2; border: 2px solid #111827; border-radius: 8px; padding: 12px; box-shadow: 2px 2px 0px #111827; margin-bottom: 16px;">
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 1.2rem;">🔴</span>
+                    <span style="font-size: 1.2rem;">[ALERT]</span>
                     <div>
                         <strong style="color: #991B1B; font-size: 0.9rem;">BACKEND OFFLINE</strong><br>
                         <span style="font-size: 0.75rem; color: #B91C1C;">Start server: <code>python src/api.py</code></span>
@@ -592,11 +582,11 @@ with st.sidebar:
         )
 
     st.markdown("---")
-    st.markdown("### 🎯 INFERENCE CONFIG")
+    st.markdown("### [TARGET] INFERENCE CONFIG")
     top_k_val = st.slider("Top-K Predictions", min_value=1, max_value=5, value=3)
 
     st.markdown("---")
-    st.markdown("### 📊 MODEL BENCHMARK")
+    st.markdown("### [METRICS] MODEL BENCHMARK")
     st.markdown(
         """
         <div style="background: #FFFFFF; border: 2px solid #111827; border-radius: 8px; padding: 12px; box-shadow: 2px 2px 0px #111827; font-size: 0.8rem;">
@@ -611,7 +601,7 @@ with st.sidebar:
     )
 
     st.markdown("---")
-    st.caption("AI-Based Smart Agriculture Intelligence Platform © 2026")
+    st.caption("AI-Based Smart Agriculture Intelligence Platform (c) 2026")
 
 
 # -----------------------------------------------------------------------------
@@ -622,8 +612,8 @@ st.markdown(
     <div class="nb-hero">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
             <div>
-                <span class="nb-pill pill-green">🌱 AGRI-INTELLIGENCE v1.1</span>
-                <span class="nb-pill pill-white">⚡ RESNET-50 BACKED</span>
+                <span class="nb-pill pill-green">[AGRI] AGRI-INTELLIGENCE v1.1</span>
+                <span class="nb-pill pill-white">[FAST] RESNET-50 BACKED</span>
                 <h1 style="font-size: 2.4rem; margin: 8px 0 4px 0;">CROP DISEASE DIAGNOSTIC STUDIO</h1>
                 <p style="font-size: 1.05rem; color: #374151; margin: 0; font-weight: 500;">
                     Instant computer-vision pathology inspection for Tomato, Potato, and Pepper crops.
@@ -638,7 +628,7 @@ st.markdown(
 # -----------------------------------------------------------------------------
 # Collapsible Onboarding Guide
 # -----------------------------------------------------------------------------
-with st.expander("📖 HOW TO USE THIS DIAGNOSTIC TOOL (3-STEP FIELD GUIDE)", expanded=False):
+with st.expander("[GUIDE] HOW TO USE THIS DIAGNOSTIC TOOL (3-STEP FIELD GUIDE)", expanded=False):
     c1, c2, c3 = st.columns(3)
     with c1:
         st.markdown(
@@ -692,7 +682,7 @@ if "selected_preset_title" not in st.session_state:
 # -----------------------------------------------------------------------------
 # Quick-Test Sample Gallery
 # -----------------------------------------------------------------------------
-st.markdown("### ⚡ QUICK-TEST SAMPLE GALLERY")
+st.markdown("### [FAST] QUICK-TEST SAMPLE GALLERY")
 st.caption("Click any leaf below to test the diagnostic engine without uploading your own photo:")
 
 sample_cols = st.columns(len(SAMPLE_PRESETS))
@@ -727,10 +717,10 @@ st.markdown("---")
 # -----------------------------------------------------------------------------
 # Main Diagnostic Interaction Area
 # -----------------------------------------------------------------------------
-col_input, col_results = st.columns([1, 1.3], gap="large")
+col_input, col_results = st.columns([1, 1.3], gap="medium")
 
 with col_input:
-    st.markdown("### 📸 LEAF PHOTOGRAPH")
+    st.markdown("### [PHOTO] LEAF PHOTOGRAPH")
 
     uploaded_file = st.file_uploader(
         "Upload a leaf image (JPEG, PNG, WebP)",
@@ -763,14 +753,14 @@ with col_input:
                 f"""
                 <div style="background: #F3F4F6; border: 2px solid #111827; border-radius: 8px; padding: 10px 14px; font-size: 0.8rem; box-shadow: 2px 2px 0px #111827;">
                     <b>File:</b> <code>{st.session_state['active_filename']}</code><br>
-                    <b>Dimensions:</b> {img_w} × {img_h} px | <b>Size:</b> {file_kb:.1f} KB
+                    <b>Dimensions:</b> {img_w} x {img_h} px | <b>Size:</b> {file_kb:.1f} KB
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
 
             # Clear button
-            if st.button("🗑️ Clear Active Image", key="clear_img"):
+            if st.button("[CLEAR] Clear Active Image", key="clear_img"):
                 st.session_state["active_image_bytes"] = None
                 st.session_state["active_filename"] = None
                 st.session_state["selected_preset_title"] = None
@@ -782,7 +772,7 @@ with col_input:
         st.markdown(
             """
             <div style="background: #FFFFFF; border: 2.5px dashed #9CA3AF; border-radius: 12px; padding: 48px 24px; text-align: center; margin-top: 12px;">
-                <div style="font-size: 3rem; margin-bottom: 12px;">🍃</div>
+                <div style="font-size: 3rem; margin-bottom: 12px;">[LEAF]</div>
                 <h4 style="color: #6B7280; margin-bottom: 6px;">No Leaf Image Selected</h4>
                 <p style="font-size: 0.85rem; color: #9CA3AF; margin: 0;">
                     Drag & drop a photo above or click any sample card from the Quick-Test gallery.
@@ -794,13 +784,13 @@ with col_input:
 
 
 with col_results:
-    st.markdown("### 🔬 DIAGNOSTIC RESULTS")
+    st.markdown("### [DIAGNOSIS] DIAGNOSTIC RESULTS")
 
     if not is_online:
         st.markdown(
             """
             <div class="nb-card" style="border-color: #EF4444; background: #FEF2F2;">
-                <span class="nb-pill pill-red">⚠️ BACKEND OFFLINE</span>
+                <span class="nb-pill pill-red">[WARN] BACKEND OFFLINE</span>
                 <h3 style="color: #991B1B; margin: 8px 0;">Cannot Connect to Inference Engine</h3>
                 <p style="font-size: 0.9rem; color: #7F1D1D;">
                     The FastAPI backend is not responding at the configured URL. Please start the API service in your terminal:
@@ -816,7 +806,7 @@ with col_results:
         st.markdown(
             """
             <div class="nb-card" style="text-align: center; padding: 48px 24px;">
-                <div style="font-size: 2.5rem; margin-bottom: 8px;">⏳</div>
+                <div style="font-size: 2.5rem; margin-bottom: 8px;">[WAIT]</div>
                 <h3 style="color: #4B5563; margin-bottom: 6px;">Waiting for Input</h3>
                 <p style="font-size: 0.9rem; color: #6B7280;">
                     Select an image from the left panel to trigger real-time neural classification.
@@ -864,8 +854,8 @@ with col_results:
                 f"""
                 <div class="nb-telemetry-box">
                     <div>
-                        <span class="nb-pill pill-white">⚡ LATENCY: <b>{inf_time:.2f} ms</b></span>
-                        <span class="nb-pill pill-purple">🖥️ HARDWARE: <b>{device_str.upper()}</b></span>
+                        <span class="nb-pill pill-white">[FAST] LATENCY: <b>{inf_time:.2f} ms</b></span>
+                        <span class="nb-pill pill-purple">[DEVICE] HARDWARE: <b>{device_str.upper()}</b></span>
                     </div>
                     <div>
                         <span class="nb-pill pill-green">ACCURACY: <b>98.98%</b></span>
@@ -893,14 +883,7 @@ with col_results:
                         Pathogen: {kb_entry['scientific_name']}
                     </p>
 
-                    <!-- Confidence Progress Bar -->
-                    <div class="nb-progress-wrapper">
-                        <div class="nb-progress-bar" style="width: {min(100.0, primary['confidence'] * 100):.1f}%; background-color: {card_border_color};">
-                            {primary['confidence_pct']}
-                        </div>
-                    </div>
-
-                    <p style="font-size: 0.9rem; color: #374151; margin-top: 14px; margin-bottom: 8px; line-height: 1.4;">
+                    <p style="font-size: 0.9rem; color: #374151; margin-top: 14px; margin-bottom: 4px; line-height: 1.4;">
                         <b>Diagnostic Overview:</b> {kb_entry['overview']}
                     </p>
                 </div>
@@ -908,12 +891,22 @@ with col_results:
                 unsafe_allow_html=True,
             )
 
+            # Native Streamlit confidence progress bar
+            conf_val = min(1.0, primary['confidence'])
+            conf_color = kb_entry['theme_color']
+            st.markdown(
+                f'<p style="font-size:0.78rem;font-weight:700;color:#374151;margin:4px 0 2px 0;">'
+                f'CONFIDENCE &nbsp;<span style="color:{conf_color};font-size:0.9rem;">{primary["confidence_pct"]}</span></p>',
+                unsafe_allow_html=True
+            )
+            st.progress(conf_val)
+
             # Agronomic Action Card
             st.markdown(
                 f"""
                 <div class="nb-card" style="background-color: #FAFAFA; border-color: #111827;">
                     <h4 style="margin-top: 0; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-                        <span>🩺</span> Recommended Agronomic Interventions
+                        <span>[TREATMENT]</span> Recommended Agronomic Interventions
                     </h4>
                     <ul style="margin: 0; padding-left: 20px; font-size: 0.88rem; color: #1F2937; line-height: 1.6;">
                         {''.join(f'<li style="margin-bottom: 6px;">{t}</li>' for t in kb_entry['treatments'])}
@@ -927,37 +920,33 @@ with col_results:
             st.markdown(
                 """
                 <div class="nb-card">
-                    <h4 style="margin-top: 0; margin-bottom: 14px;">📊 Top Alternative Class Distributions</h4>
+                    <h4 style="margin-top: 0; margin-bottom: 14px;">[METRICS] Top Alternative Class Distributions</h4>
                 """,
                 unsafe_allow_html=True,
             )
 
             for alt in top_k_list:
                 alt_name = alt["class_name"]
-                alt_conf = alt["confidence"]
+                alt_conf = min(1.0, alt["confidence"])
                 alt_pct = alt["confidence_pct"]
                 alt_display = DISEASE_KNOWLEDGE_BASE.get(alt_name, {}).get("display_name", alt_name.replace("_", " "))
-                bar_color = "#10B981" if alt["rank"] == 1 else "#3B82F6"
-
+                rank_color = "#10B981" if alt["rank"] == 1 else ("#3B82F6" if alt["rank"] == 2 else "#6B7280")
+                rank_badge = "#10B981" if alt["rank"] == 1 else ("#3B82F6" if alt["rank"] == 2 else "#9CA3AF")
                 st.markdown(
-                    f"""
-                    <div style="margin-bottom: 10px;">
-                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; margin-bottom: 3px;">
-                            <span>#{alt['rank']} {alt_display}</span>
-                            <span>{alt_pct}</span>
-                        </div>
-                        <div class="nb-progress-wrapper" style="height: 16px; margin: 0;">
-                            <div class="nb-progress-bar" style="width: {alt_conf * 100:.1f}%; background-color: {bar_color}; line-height: 16px;"></div>
-                        </div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
+                    f'<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px;margin-top:8px;">'
+                    f'<span style="font-size:0.83rem;font-weight:700;color:#111827;">'
+                    f'<span style="background:{rank_badge};color:#fff;padding:1px 7px;border-radius:4px;font-size:0.72rem;margin-right:6px;border:1px solid #111827;">#{alt["rank"]}</span>'
+                    f'{alt_display}</span>'
+                    f'<span style="font-size:0.82rem;font-weight:800;color:{rank_color};">{alt_pct}</span>'
+                    f'</div>',
+                    unsafe_allow_html=True
                 )
+                st.progress(alt_conf)
 
             st.markdown("</div>", unsafe_allow_html=True)
 
             # Raw Developer JSON Inspection
-            with st.expander("🛠️ Raw JSON Response (Developer Telemetry)"):
+            with st.expander("[DEV] Raw JSON Response (Developer Telemetry)"):
                 st.json(pred_response)
 
 # -----------------------------------------------------------------------------
@@ -967,9 +956,10 @@ st.markdown("---")
 st.markdown(
     """
     <div style="text-align: center; color: #6B7280; font-size: 0.82rem; padding: 12px 0;">
-        <b>Smart Agriculture Crop Disease Intelligence Platform</b> · Powered by PyTorch, ResNet-50 & FastAPI<br>
-        Trained on the PlantVillage Benchmark Dataset · 98.98% Test Accuracy across 2,063 Untouched Samples
+        <b>Smart Agriculture Crop Disease Intelligence Platform</b> | Powered by PyTorch, ResNet-50 & FastAPI<br>
+        Trained on the PlantVillage Benchmark Dataset | 98.98% Test Accuracy across 2,063 Untouched Samples
     </div>
     """,
     unsafe_allow_html=True,
 )
+
