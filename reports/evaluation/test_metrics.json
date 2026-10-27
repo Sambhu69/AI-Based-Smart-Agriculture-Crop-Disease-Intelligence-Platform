@@ -1,0 +1,67 @@
+{
+  "timestamp": "2026-10-27 11:18:22",
+  "model_name": "resnet50",
+  "checkpoint_path": "C:\\Users\\ACER\\Intern21\\smart-agriculture-platform\\models\\best_model.pth",
+  "device": "cuda",
+  "checkpoint_metadata": {
+    "epoch": 4,
+    "best_val_loss": 0.023131319025143236
+  },
+  "total_samples": 2063,
+  "num_classes": 15,
+  "test_loss": 0.0345,
+  "top1_accuracy": 0.9898,
+  "macro_precision": 0.9807,
+  "macro_recall": 0.9899,
+  "macro_f1": 0.985,
+  "weighted_precision": 0.9901,
+  "weighted_recall": 0.9898,
+  "weighted_f1": 0.9899,
+  "roc_auc_ovr_macro": 0.9999,
+  "roc_auc_ovr_weighted": 0.9999,
+  "confidence_analysis": {
+    "mean_confidence_correct": 0.9931,
+    "mean_confidence_incorrect": 0.8118
+  },
+  "top_misclassifications": [
+    {
+      "true_class": "Tomato_Late_blight",
+      "predicted_class": "Tomato_Early_blight",
+      "count": 3,
+      "pct_of_true_class": 1.57
+    },
+    {
+      "true_class": "Tomato_Spider_mites_Two_spotted_spider_mite",
+      "predicted_class": "Tomato__Target_Spot",
+      "count": 3,
+      "pct_of_true_class": 1.79
+    },
+    {
+      "true_class": "Tomato__Target_Spot",
+      "predicted_class": "Tomato_Early_blight",
+      "count": 3,
+      "pct_of_true_class": 2.14
+    },
+    {
+      "true_class": "Potato___Late_blight",
+      "predicted_class": "Potato___healthy",
+      "count": 2,
+      "pct_of_true_class": 2.0
+    },
+    {
+      "true_class": "Tomato__Target_Spot",
+      "predicted_class": "Tomato_Spider_mites_Two_spotted_spider_mite",
+      "count": 2,
+      "pct_of_true_class": 1.43
+    }
+  ],
+  "top3_accuracy": 1.0,
+  "top5_accuracy": 1.0,
+  "latency": {
+    "mean_latency_ms": 6.21,
+    "median_p50_latency_ms": 5.91,
+    "p95_latency_ms": 8.37,
+    "p99_latency_ms": 9.0,
+    "throughput_fps": 160.9
+  }
+}

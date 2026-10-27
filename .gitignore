@@ -1,4 +1,4 @@
-# ── Python ────────────────────────────────────────────────────────────────────
+# Python
 __pycache__/
 *.py[cod]
 *.pyo
@@ -9,32 +9,36 @@ dist/
 build/
 *.egg
 
-# ── Virtual environment ───────────────────────────────────────────────────────
+# Virtual environment
 venv/
 env/
 .venv/
 
-# ── Dataset (too large for git – use DVC or manual download) ──────────────────
+# Dataset (too large for git - use Kaggle or manual download)
 data/
 
-# ── Model checkpoints & weights ───────────────────────────────────────────────
+# Model checkpoints & weights
 models/*.pth
 models/*.pt
 models/*.ckpt
 
-# ── Outlier detection outputs ─────────────────────────────────────────────────
+# Outlier detection outputs
 suspicious_outliers/
 
-# ── Jupyter notebook checkpoints ─────────────────────────────────────────────
+# Jupyter notebook checkpoints
 .ipynb_checkpoints/
 notebooks/.ipynb_checkpoints/
 
-# ── IDE & OS ──────────────────────────────────────────────────────────────────
+# IDE & OS
 .vscode/
 .idea/
 *.DS_Store
 Thumbs.db
 
-# ── Logs ─────────────────────────────────────────────────────────────────────
+# Logs
 *.log
 logs/
+
+# Temporary scripts
+check_deps.py
+inspect_data.py
