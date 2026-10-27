@@ -129,7 +129,8 @@ smart-agriculture-platform/
 │   ├── model.py                    # ResNet-50 / EfficientNet-B0 transfer learning
 │   ├── train.py                    # Full training loop with AMP, checkpointing
 │   ├── evaluate.py                 # Comprehensive test audit (ROC-AUC, Top-k, heatmaps)
-│   └── api.py                      # FastAPI inference service with lifespan management
+│   ├── api.py                      # FastAPI inference service with lifespan management
+│   └── dashboard.py                # Neo-Brutalist Streamlit interactive web studio
 │
 ├── 📁 models/                      # Saved model checkpoints (.gitignored)
 │   └── best_model.pth              # Best validation checkpoint
@@ -222,6 +223,14 @@ uvicorn src.api:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 Open **http://localhost:8000/docs** for the interactive Swagger UI.
+
+### 7. Launch the Interactive Web Dashboard
+
+```bash
+streamlit run src/dashboard.py
+```
+
+Open **http://localhost:8501** for the Neo-Brutalist diagnostic studio featuring 1-click test gallery samples, live latency telemetry, diagnostic symptom analysis, and actionable agronomic containment advice.
 
 ---
 
