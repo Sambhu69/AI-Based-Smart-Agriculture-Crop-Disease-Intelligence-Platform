@@ -1,0 +1,44 @@
+{
+  "pipeline_name": "PlantVillageAudit",
+  "stage_name": "DatasetIntegrityCheck",
+  "parameters": {
+    "raw_dir": "data\\raw\\PlantVillage",
+    "processed_dir": "data\\processed\\PlantVillage",
+    "outlier_report_path": "suspicious_outliers\\outlier_report.csv"
+  },
+  "started_at": "2026-11-21T11:03:10.285989+00:00",
+  "completed_at": "2026-11-21T11:03:16.513399+00:00",
+  "status": "success",
+  "inputs": [
+    {
+      "path": "data\\raw\\PlantVillage",
+      "exists": true,
+      "sha256": null,
+      "description": "Raw PlantVillage dataset root"
+    },
+    {
+      "path": "data\\processed\\PlantVillage",
+      "exists": true,
+      "sha256": null,
+      "description": "Processed PlantVillage dataset root"
+    },
+    {
+      "path": "suspicious_outliers\\outlier_report.csv",
+      "exists": true,
+      "sha256": "cb251b19b02feaff544f9bf0616859996f11da8f40bb86354fa0c80838f23b4d",
+      "description": "Outlier detection report CSV"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "reports\\data_quality\\plantvillage_audit.json",
+      "exists": true,
+      "sha256": "a5901d9e68068ebee126c9aa286d8207c03754d0ce810f1d76adcde24daab864",
+      "description": "PlantVillage Audit Report JSON"
+    }
+  ],
+  "metadata": {
+    "total_raw": 20635,
+    "total_processed": 20632
+  }
+}

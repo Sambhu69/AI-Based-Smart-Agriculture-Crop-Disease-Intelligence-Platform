@@ -1,0 +1,116 @@
+{
+  "audit_timestamp": "2026-11-21T11:03:16.494363+00:00",
+  "total_classes": 15,
+  "total_raw_samples": 20635,
+  "total_processed_samples": 20632,
+  "total_removed_samples": 3,
+  "total_flagged_outliers": 256,
+  "outlier_report_present": true,
+  "classes": {
+    "Pepper__bell___Bacterial_spot": {
+      "raw_count": 997,
+      "processed_count": 997,
+      "delta_removed": 0,
+      "flagged_outliers": 15,
+      "outlier_pct_of_raw": 1.5
+    },
+    "Pepper__bell___healthy": {
+      "raw_count": 1476,
+      "processed_count": 1476,
+      "delta_removed": 0,
+      "flagged_outliers": 13,
+      "outlier_pct_of_raw": 0.88
+    },
+    "Potato___Early_blight": {
+      "raw_count": 1000,
+      "processed_count": 1000,
+      "delta_removed": 0,
+      "flagged_outliers": 31,
+      "outlier_pct_of_raw": 3.1
+    },
+    "Potato___Late_blight": {
+      "raw_count": 1000,
+      "processed_count": 1000,
+      "delta_removed": 0,
+      "flagged_outliers": 19,
+      "outlier_pct_of_raw": 1.9
+    },
+    "Potato___healthy": {
+      "raw_count": 152,
+      "processed_count": 152,
+      "delta_removed": 0,
+      "flagged_outliers": 2,
+      "outlier_pct_of_raw": 1.32
+    },
+    "Tomato_Bacterial_spot": {
+      "raw_count": 2127,
+      "processed_count": 2127,
+      "delta_removed": 0,
+      "flagged_outliers": 20,
+      "outlier_pct_of_raw": 0.94
+    },
+    "Tomato_Early_blight": {
+      "raw_count": 1000,
+      "processed_count": 1000,
+      "delta_removed": 0,
+      "flagged_outliers": 12,
+      "outlier_pct_of_raw": 1.2
+    },
+    "Tomato_Late_blight": {
+      "raw_count": 1909,
+      "processed_count": 1909,
+      "delta_removed": 0,
+      "flagged_outliers": 37,
+      "outlier_pct_of_raw": 1.94
+    },
+    "Tomato_Leaf_Mold": {
+      "raw_count": 952,
+      "processed_count": 952,
+      "delta_removed": 0,
+      "flagged_outliers": 4,
+      "outlier_pct_of_raw": 0.42
+    },
+    "Tomato_Septoria_leaf_spot": {
+      "raw_count": 1771,
+      "processed_count": 1771,
+      "delta_removed": 0,
+      "flagged_outliers": 25,
+      "outlier_pct_of_raw": 1.41
+    },
+    "Tomato_Spider_mites_Two_spotted_spider_mite": {
+      "raw_count": 1676,
+      "processed_count": 1676,
+      "delta_removed": 0,
+      "flagged_outliers": 14,
+      "outlier_pct_of_raw": 0.84
+    },
+    "Tomato__Target_Spot": {
+      "raw_count": 1404,
+      "processed_count": 1404,
+      "delta_removed": 0,
+      "flagged_outliers": 16,
+      "outlier_pct_of_raw": 1.14
+    },
+    "Tomato__Tomato_YellowLeaf__Curl_Virus": {
+      "raw_count": 3208,
+      "processed_count": 3205,
+      "delta_removed": 3,
+      "flagged_outliers": 35,
+      "outlier_pct_of_raw": 1.09
+    },
+    "Tomato__Tomato_mosaic_virus": {
+      "raw_count": 373,
+      "processed_count": 373,
+      "delta_removed": 0,
+      "flagged_outliers": 3,
+      "outlier_pct_of_raw": 0.8
+    },
+    "Tomato_healthy": {
+      "raw_count": 1590,
+      "processed_count": 1590,
+      "delta_removed": 0,
+      "flagged_outliers": 10,
+      "outlier_pct_of_raw": 0.63
+    }
+  }
+}
