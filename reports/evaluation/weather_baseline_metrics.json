@@ -1,0 +1,23 @@
+{
+  "train_days": 2551,
+  "val_days": 547,
+  "test_days": 547,
+  "test_start_date": "2023-07-03 00:00:00",
+  "test_end_date": "2024-12-30 00:00:00",
+  "models": {
+    "persistence_naive": {
+      "MAE": 0.657,
+      "RMSE": 0.887
+    },
+    "ridge_regression": {
+      "MAE": 0.936,
+      "RMSE": 1.24
+    },
+    "random_forest": {
+      "MAE": 0.946,
+      "RMSE": 1.253
+    }
+  },
+  "best_model": "ridge_regression",
+  "improvement_over_naive_rmse_pct": -39.82
+}

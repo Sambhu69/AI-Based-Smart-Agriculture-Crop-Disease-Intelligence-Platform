@@ -28,6 +28,8 @@ data/
 models/*.pth
 models/*.h5
 models/*.pkl
+models/*.joblib
+models/stage6/
 mlruns/
 experiments/*
 

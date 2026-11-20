@@ -1,0 +1,58 @@
+{
+  "pipeline_name": "MultiDomainAgriculturalEDA",
+  "stage_name": "StatisticalAndVisualAnalysis",
+  "parameters": {
+    "figures_dir": "reports\\eda\\figures"
+  },
+  "started_at": "2026-11-21T11:31:31.219212+00:00",
+  "completed_at": "2026-11-21T11:31:35.529992+00:00",
+  "status": "success",
+  "inputs": [],
+  "outputs": [
+    {
+      "path": "reports\\eda\\figures\\01_plantvillage_class_imbalance.png",
+      "exists": true,
+      "sha256": "c0b6682e4240bb987a9095b4faea574ede59d3c8d9aaa506d3cb4980ea1da03a",
+      "description": "Class distribution horizontal bar chart"
+    },
+    {
+      "path": "reports\\eda\\figures\\02_plantvillage_outliers_by_class.png",
+      "exists": true,
+      "sha256": "165a7af3ace9570abce16dd0ccc519b9a0fdf66e28f9a61ff6de6d1c3343c1b2",
+      "description": "Outliers distribution horizontal bar chart"
+    },
+    {
+      "path": "reports\\eda\\figures\\03_outlier_feature_space.png",
+      "exists": true,
+      "sha256": "610de81c4f8446e471a83cbc1b54a32e23659005b67e05d62193a5824a64a2df",
+      "description": "Outlier feature distribution scatter plot"
+    },
+    {
+      "path": "reports\\eda\\figures\\04_nasa_power_monthly_seasonality.png",
+      "exists": true,
+      "sha256": "d239aa112d0d8a0b123b43abd2f40db765623ef451948f5680ac650df6d028f4",
+      "description": "Monthly seasonality line & bar chart"
+    },
+    {
+      "path": "reports\\eda\\figures\\05_weather_correlation_matrix.png",
+      "exists": true,
+      "sha256": "ad8ef43fa174734a870b772107efc2f291876c0def7e5b2bb0a969423aeee838",
+      "description": "Weather correlation matrix heatmap"
+    },
+    {
+      "path": "reports\\eda\\figures\\06_crop_yield_trends.png",
+      "exists": true,
+      "sha256": "88d1417d6184b64f012a6aa1b760e191df4ea18a6bb7af9df52870bdd2089a18",
+      "description": "Crop yield trends chart"
+    }
+  ],
+  "metadata": {
+    "imbalance_ratio": 21.09,
+    "min_class": "Potato___healthy",
+    "max_class": "Tomato__Tomato_YellowLeaf__Curl_Virus",
+    "total_outliers_in_csv": 256,
+    "total_weather_records": 10959,
+    "mean_temp_c": 20.9,
+    "annual_mean_precip_mm": 5081.18
+  }
+}

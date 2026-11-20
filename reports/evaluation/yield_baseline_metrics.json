@@ -1,0 +1,24 @@
+{
+  "train_samples": 28,
+  "val_samples": 6,
+  "test_samples": 6,
+  "models": {
+    "dummy_mean": {
+      "MAE": 6191.67,
+      "RMSE": 6671.32,
+      "R2": -0.1033
+    },
+    "ridge_regression": {
+      "MAE": 706.24,
+      "RMSE": 834.94,
+      "R2": 0.9827
+    },
+    "random_forest": {
+      "MAE": 1172.33,
+      "RMSE": 1299.42,
+      "R2": 0.9581
+    }
+  },
+  "best_model": "ridge_regression",
+  "best_rmse": 834.94
+}

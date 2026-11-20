@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query, status
 from sqlalchemy.orm import Session
@@ -21,8 +22,22 @@ from app.schemas.contracts import (
     TwinScenarioCreate,
     TwinScenarioResponse,
     DiseasePredictionResponse,
+    CropIrrigationAdvisoryRequest,
+    CropIrrigationAdvisoryResponse,
+    YieldPredictionRequest,
+    YieldPredictionResponse,
+    TwinSimulationRequest,
+    TwinSimulationResponse,
+    IntelligenceAssessmentRequest,
+    IntelligenceAssessmentResponse,
 )
 from app.services.disease_service import disease_service
+from app.services.agronomy_service import recommend_crops, recommend_irrigation_and_fertilizer
+from app.services.twin_service import simulate_plot_scenario
+from app.services.advanced_intelligence_service import (
+    assess_outbreak_and_multimodal_risk,
+    answer_farming_assistant_query,
+)
 
 router = APIRouter()
 
@@ -168,4 +183,285 @@ async def predict_crop_disease(
         inference_device=result["inference_device"],
         inference_time_ms=result["inference_time_ms"],
         record_id=record.id,
+    )
+
+# --- Agronomy & Crop-Irrigation Advisory (Step 6B) ---
+@router.post("/recommend/crop-irrigation", response_model=CropIrrigationAdvisoryResponse, tags=["Agronomy Advisory"])
+def recommend_crop_and_irrigation(
+    req: CropIrrigationAdvisoryRequest,
+    db: Session = Depends(get_db),
+):
+    """
+    Evaluates crop suitability ranking and produces prescriptive irrigation
+    and fertilizer recommendations with explicit epistemic_type="recommended".
+    """
+    suitability_res = recommend_crops(
+        soil_ph=req.soil_ph,
+        temperature_c=req.temperature_c,
+        soil_moisture_pct=req.soil_moisture_pct,
+    )
+
+    irrigation_res = recommend_irrigation_and_fertilizer(
+        crop_type=req.crop_type,
+        soil_moisture_pct=req.soil_moisture_pct,
+        temperature_c=req.temperature_c,
+        precipitation_mm=req.precipitation_mm,
+        soil_ph=req.soil_ph,
+    )
+
+    record_id = None
+    if req.plot_id is not None:
+        pred_repo = PredictionRepository(db)
+        record = pred_repo.create(
+            plot_id=req.plot_id,
+            task="crop_and_irrigation_advisory",
+            model_name="agronomy_rule_engine_v1",
+            model_version="1.0.0",
+            primary_prediction=suitability_res["ranked_crops"][0]["crop_type"],
+            confidence=suitability_res["ranked_crops"][0]["suitability_score"],
+            top_k_predictions=[
+                {"crop": c["crop_type"], "score": c["suitability_score"]}
+                for c in suitability_res["ranked_crops"][:3]
+            ],
+        )
+        record_id = record.id
+
+    return CropIrrigationAdvisoryResponse(
+        epistemic_type="recommended",
+        crop_type=req.crop_type,
+        crop_suitability_ranking=suitability_res["ranked_crops"],
+        irrigation_recommendation=irrigation_res["irrigation_recommendation"],
+        fertilizer_recommendation=irrigation_res["fertilizer_recommendation"],
+        assumptions=suitability_res["assumptions"] + irrigation_res["assumptions"],
+        limitations=f"{suitability_res['limitations']} {irrigation_res['limitations']}",
+        record_id=record_id,
+    )
+
+# --- Tabular Crop Yield Prediction (Step 6B) ---
+@router.post("/predict/yield", response_model=YieldPredictionResponse, tags=["Yield Prediction"])
+def predict_crop_yield_endpoint(
+    req: YieldPredictionRequest,
+    db: Session = Depends(get_db),
+):
+    """
+    Predicts expected crop yield (kg/ha and total kg) using the trained Stage 6
+    yield model baseline with epistemic_type="predicted".
+    Gracefully falls back to baseline agronomic heuristics if artifact is missing.
+    """
+    model_bundle = Path("models/stage6/yield_baseline.joblib")
+    features_dict = {
+        "crop_type": req.crop_type,
+        "harvest_year": req.harvest_year,
+        "area_hectares": req.area_hectares,
+        "ph": req.ph or 6.2,
+        "moisture_pct": req.moisture_pct or 28.0,
+        "nitrogen_mg_kg": req.nitrogen_mg_kg or 40.0,
+        "organic_matter_pct": req.organic_matter_pct or 2.5,
+    }
+
+    model_name = "ridge_regression_baseline"
+    if model_bundle.exists():
+        from pipelines.models.yield_baseline import predict_yield
+        try:
+            pred_kg_ha = predict_yield(features_dict, model_bundle_path=model_bundle)
+        except Exception:
+            # Fallback baseline
+            base_yields = {"Tomato": 21000.0, "Potato": 16000.0, "Pepper": 9500.0}
+            pred_kg_ha = base_yields.get(req.crop_type, 15000.0)
+            model_name = "agronomic_heuristic_fallback"
+    else:
+        base_yields = {"Tomato": 21000.0, "Potato": 16000.0, "Pepper": 9500.0}
+        pred_kg_ha = base_yields.get(req.crop_type, 15000.0)
+        model_name = "agronomic_heuristic_fallback"
+
+    total_kg = round(pred_kg_ha * req.area_hectares, 2)
+
+    record_id = None
+    if req.plot_id is not None:
+        pred_repo = PredictionRepository(db)
+        record = pred_repo.create(
+            plot_id=req.plot_id,
+            task="crop_yield_prediction",
+            model_name=model_name,
+            model_version="1.0.0",
+            primary_prediction=f"{pred_kg_ha} kg/ha",
+            confidence=0.90,
+            top_k_predictions=[{"crop": req.crop_type, "yield_kg_per_ha": pred_kg_ha}],
+        )
+        record_id = record.id
+
+    return YieldPredictionResponse(
+        crop_type=req.crop_type,
+        predicted_yield_kg_per_ha=pred_kg_ha,
+        total_projected_yield_kg=total_kg,
+        area_hectares=req.area_hectares,
+        harvest_year=req.harvest_year,
+        model_name=model_name,
+        epistemic_type="predicted",
+        record_id=record_id,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Digital Twin Simulation Endpoint (Step 7A)
+# ---------------------------------------------------------------------------
+
+@router.post(
+    "/twin/simulate",
+    response_model=TwinSimulationResponse,
+    tags=["Digital Twin"],
+    summary="Run a Digital Twin scenario simulation for a crop plot",
+    description=(
+        "Applies named or custom agronomic adjustment scenarios (temperature, rainfall, "
+        "irrigation, fertilizer, disease pressure) to a baseline yield and returns a "
+        "structured simulation result with epistemic_type='simulated'. "
+        "If plot_id is provided, the result is persisted and 404 is returned for invalid plot IDs."
+    ),
+)
+def simulate_twin_scenario(
+    req: TwinSimulationRequest,
+    db: Session = Depends(get_db),
+):
+    # --- Optional: validate plot exists before expensive simulation ---
+    record_id = None
+    if req.plot_id is not None:
+        plot_repo = PlotRepository(db)
+        plot = plot_repo.get_by_id(req.plot_id)
+        if plot is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Plot with id={req.plot_id} not found.",
+            )
+
+    # --- Run simulation ---
+    adjustments = {
+        "temperature_delta_c": req.temperature_delta_c,
+        "rainfall_multiplier": req.rainfall_multiplier,
+        "irrigation_mm": req.irrigation_mm,
+        "fertilizer_kg_ha": req.fertilizer_kg_ha,
+        "disease_pressure": req.disease_pressure,
+    }
+    result = simulate_plot_scenario(
+        plot_id=req.plot_id,
+        crop_type=req.crop_type,
+        baseline_yield_kg_ha=req.baseline_yield_kg_ha,
+        scenario=req.scenario,
+        adjustments=adjustments,
+    )
+
+    # --- Persist to twin_scenarios table if plot_id provided ---
+    if req.plot_id is not None:
+        twin_repo = TwinScenarioRepository(db)
+        parameters = {
+            "temperature_delta_c": req.temperature_delta_c,
+            "rainfall_multiplier": req.rainfall_multiplier,
+            "irrigation_mm": req.irrigation_mm,
+            "fertilizer_kg_ha": req.fertilizer_kg_ha,
+            "disease_pressure": req.disease_pressure,
+            "crop_type": req.crop_type,
+            "baseline_yield_kg_ha": req.baseline_yield_kg_ha,
+        }
+        simulation_results = {
+            "simulated_yield_kg_ha": result["simulated_yield_kg_ha"],
+            "yield_change_pct": result["yield_change_pct"],
+            "combined_yield_factor": result.get("combined_yield_factor"),
+            "factor_breakdown": result.get("factor_breakdown"),
+            "key_drivers": result["key_drivers"],
+        }
+        record = twin_repo.create(
+            plot_id=req.plot_id,
+            scenario_name=req.scenario,
+            simulation_engine="twin_service_v1",
+            parameters=parameters,
+            simulation_results=simulation_results,
+        )
+        record_id = record.id
+
+    return TwinSimulationResponse(
+        epistemic_type=result["epistemic_type"],
+        crop_type=result["crop_type"],
+        scenario=result["scenario"],
+        baseline_yield_kg_ha=result["baseline_yield_kg_ha"],
+        simulated_yield_kg_ha=result["simulated_yield_kg_ha"],
+        yield_change_pct=result["yield_change_pct"],
+        combined_yield_factor=result.get("combined_yield_factor"),
+        factor_breakdown=result.get("factor_breakdown"),
+        key_drivers=result["key_drivers"],
+        assumptions=result["assumptions"],
+        limitations=result["limitations"],
+        record_id=record_id,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Advanced Intelligence & Risk Assessment Endpoint (Step 7B)
+# ---------------------------------------------------------------------------
+
+@router.post(
+    "/intelligence/assess",
+    response_model=IntelligenceAssessmentResponse,
+    tags=["Intelligence"],
+    summary="Assess multimodal disease outbreak risk and get tool-grounded assistant guidance",
+    description=(
+        "Evaluates microclimate and visual anomaly indicators to quantify pathogen outbreak risk. "
+        "Optionally routes natural language queries to platform tools deterministically. "
+        "Returns epistemic_type='predicted' with explicit caveats. Persists if plot_id provided."
+    ),
+)
+def assess_intelligence_risk(
+    req: IntelligenceAssessmentRequest,
+    db: Session = Depends(get_db),
+):
+    record_id = None
+    if req.plot_id is not None:
+        plot_repo = PlotRepository(db)
+        plot = plot_repo.get_by_id(req.plot_id)
+        if plot is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Plot with id={req.plot_id} not found.",
+            )
+
+    # 1. Assess outbreak risk
+    risk_res = assess_outbreak_and_multimodal_risk(
+        crop_type=req.crop_type,
+        temperature_c=req.temperature_c,
+        relative_humidity_pct=req.relative_humidity_pct,
+        rainfall_mm=req.rainfall_mm,
+        visual_anomaly_score=req.visual_anomaly_score,
+    )
+
+    # 2. Optional tool-grounded assistant routing
+    assistant_res = None
+    if req.query:
+        ctx = {
+            "crop_type": req.crop_type,
+            "temperature_c": req.temperature_c,
+            "relative_humidity_pct": req.relative_humidity_pct,
+            "rainfall_mm": req.rainfall_mm,
+            "visual_anomaly_score": req.visual_anomaly_score,
+        }
+        assistant_res = answer_farming_assistant_query(query=req.query, context=ctx)
+
+    # 3. Provenance tracking via prediction repo
+    if req.plot_id is not None:
+        pred_repo = PredictionRepository(db)
+        record = pred_repo.create(
+            plot_id=req.plot_id,
+            task="disease_outbreak_risk_assessment",
+            model_name="environmental_outbreak_evaluator",
+            model_version="1.0.0",
+            primary_prediction=f"{risk_res['risk_level']} (score: {risk_res['risk_score']})",
+            confidence=round(float(risk_res["risk_score"]), 2),
+            top_k_predictions=[{"threat": t} for t in risk_res["primary_threats"][:3]],
+        )
+        record_id = record.id
+
+    return IntelligenceAssessmentResponse(
+        epistemic_type="predicted",
+        crop_type=req.crop_type,
+        risk_assessment=risk_res,
+        assistant_response=assistant_res,
+        limitations=risk_res["caveats"],
+        record_id=record_id,
     )
