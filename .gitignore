@@ -11,10 +11,16 @@ venv/
 ENV/
 env/
 
-# Environment secrets
+# Environment secrets & credentials
 .env
-.env.local
+.env.*
+!.env.example
 *.env
+*.pem
+*.key
+*credentials*.json
+*service-account*.json
+secrets/
 
 # SQLite and databases
 *.db
@@ -53,6 +59,14 @@ logs/
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Frontend build & dependencies
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+*.tsbuildinfo
 
 # Temporary scripts
 check_deps.py

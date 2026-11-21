@@ -604,10 +604,13 @@ def answer_farming_assistant_query(
                     temperature_c=float(ctx.get("temperature_c", 22.0)),
                     soil_ph=float(ctx.get("soil_ph", 6.2)),
                 )
+                irr = rec_res.get("irrigation_recommendation", {})
+                urgency = irr.get("urgency", rec_res.get("irrigation_urgency", "Moderate"))
+                action = irr.get("action", rec_res.get("irrigation_action", "Monitor soil moisture"))
+                water_l = irr.get("estimated_water_liters_per_m2", rec_res.get("estimated_water_liters_per_m2", 0.0))
                 guidance = (
-                    f"Irrigation advisory for {crop}: urgency is '{rec_res['irrigation_urgency']}' "
-                    f"({rec_res['irrigation_action']}). Estimated water required: "
-                    f"{rec_res['estimated_water_liters_per_m2']} L/m²."
+                    f"Irrigation advisory for {crop}: urgency is '{urgency}' "
+                    f"({action}). Estimated water required: {water_l} L/m²."
                 )
                 return {
                     "query": query,
@@ -627,8 +630,8 @@ def answer_farming_assistant_query(
                 temperature_c=float(ctx.get("temperature_c", 23.0)),
                 soil_moisture_pct=float(ctx.get("soil_moisture_pct", 65.0)),
             )
-            ranking = crop_res.get("ranking", [])
-            top_crop = ranking[0]["crop"] if ranking else "None"
+            ranking = crop_res.get("ranked_crops", crop_res.get("ranking", []))
+            top_crop = (ranking[0].get("crop_type") or ranking[0].get("crop", "None")) if ranking else "None"
             guidance = (
                 f"Ranked {len(ranking)} crops for conditions (pH {ctx.get('soil_ph', 6.5)}, "
                 f"Temp {ctx.get('temperature_c', 23.0)}°C). Top recommended crop: {top_crop}."

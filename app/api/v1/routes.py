@@ -11,10 +11,16 @@ from app.db.repositories import (
     FieldObservationRepository,
     PredictionRepository,
     TwinScenarioRepository,
+    list_recent_predictions,
+    list_recent_twin_scenarios,
 )
 from app.schemas.contracts import (
     FarmCreate,
     FarmResponse,
+    FarmDetailResponse,
+    HistoryItem,
+    HistoryResponse,
+    MonitoringStatusResponse,
     PlotCreate,
     PlotResponse,
     FieldObservationCreate,
@@ -65,7 +71,7 @@ def list_farms(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     repo = FarmRepository(db)
     return repo.list_all(skip=skip, limit=limit)
 
-@router.get("/farms/{farm_id}", response_model=FarmResponse, tags=["Farms"])
+@router.get("/farms/{farm_id}", response_model=FarmDetailResponse, tags=["Farms"])
 def get_farm(farm_id: int, db: Session = Depends(get_db)):
     repo = FarmRepository(db)
     farm = repo.get_by_id(farm_id)
@@ -464,4 +470,125 @@ def assess_intelligence_risk(
         assistant_response=assistant_res,
         limitations=risk_res["caveats"],
         record_id=record_id,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Stage 8: Farm-scoped observations and unified history
+# ---------------------------------------------------------------------------
+
+def _require_plot_in_farm(db: Session, farm_id: int, plot_id: int):
+    if not FarmRepository(db).get_by_id(farm_id):
+        raise HTTPException(status_code=404, detail="Farm not found")
+    plot = PlotRepository(db).get_by_id(plot_id)
+    if not plot or plot.farm_id != farm_id:
+        raise HTTPException(status_code=404, detail="Plot not found in this farm")
+    return plot
+
+
+@router.post(
+    "/farms/{farm_id}/plots/{plot_id}/observations",
+    response_model=FieldObservationResponse,
+    status_code=status.HTTP_201_CREATED,
+    tags=["Observations"],
+)
+def create_farm_plot_observation(
+    farm_id: int,
+    plot_id: int,
+    obs_in: FieldObservationCreate,
+    db: Session = Depends(get_db),
+):
+    _require_plot_in_farm(db, farm_id, plot_id)
+    try:
+        return FieldObservationRepository(db).create(
+            plot_id=plot_id,
+            source=obs_in.source,
+            data=obs_in.data,
+            epistemic_type=obs_in.epistemic_type,
+            notes=obs_in.notes,
+        )
+    except ValueError as err:
+        raise HTTPException(status_code=422, detail=str(err))
+
+
+@router.get(
+    "/farms/{farm_id}/plots/{plot_id}/observations",
+    response_model=List[FieldObservationResponse],
+    tags=["Observations"],
+)
+def list_farm_plot_observations(farm_id: int, plot_id: int, db: Session = Depends(get_db)):
+    _require_plot_in_farm(db, farm_id, plot_id)
+    return FieldObservationRepository(db).list_by_plot(plot_id)
+
+
+@router.get("/history", response_model=HistoryResponse, tags=["History"])
+def get_history(
+    limit: int = Query(20, ge=1, le=200),
+    module_name: Optional[str] = Query(
+        None,
+        description="Filter by prediction task (e.g. 'crop_yield_prediction') or twin simulation engine (e.g. 'twin_service_v1')",
+    ),
+    db: Session = Depends(get_db),
+):
+    """Recent prediction_records (predicted) and twin_scenarios (simulated), newest first."""
+    items: List[HistoryItem] = []
+    for p in list_recent_predictions(db, limit=limit, module_name=module_name):
+        items.append(HistoryItem(
+            record_type="prediction",
+            id=p.id,
+            plot_id=p.plot_id,
+            epistemic_type=p.epistemic_type,
+            module_name=p.task,
+            model_version=p.model_version,
+            timestamp=p.created_at,
+            summary=f"{p.model_name}: {p.primary_prediction} (confidence {p.confidence:.2f})",
+        ))
+    for t in list_recent_twin_scenarios(db, limit=limit, module_name=module_name):
+        items.append(HistoryItem(
+            record_type="twin_scenario",
+            id=t.id,
+            plot_id=t.plot_id,
+            epistemic_type=t.epistemic_type,
+            module_name=t.simulation_engine,
+            model_version=None,
+            timestamp=t.simulated_at,
+            summary=f"Scenario '{t.scenario_name}'",
+        ))
+    items.sort(key=lambda i: i.timestamp, reverse=True)
+    items = items[:limit]
+    return HistoryResponse(count=len(items), limit=limit, module_name=module_name, items=items)
+
+
+# ---------------------------------------------------------------------------
+# Stage 11: MLOps Drift & Confidence Monitoring Endpoint
+# ---------------------------------------------------------------------------
+
+@router.get("/monitoring/status", response_model=MonitoringStatusResponse, tags=["Monitoring"])
+def get_monitoring_status(
+    limit: int = Query(50, ge=1, le=200),
+    db: Session = Depends(get_db),
+):
+    """
+    Evaluates recent persisted prediction confidences against a reference baseline
+    using pipelines.monitoring.drift_monitor without fabricating any metrics.
+    """
+    from pipelines.monitoring.drift_monitor import compute_confidence_drift
+
+    recent = list_recent_predictions(db, limit=limit)
+    confidences = [float(r.confidence) for r in recent if r.confidence is not None]
+    report = compute_confidence_drift(confidences, ref_mean_conf=0.85)
+
+    return MonitoringStatusResponse(
+        status=report["status"],
+        epistemic_type="observed",
+        sample_count=report["sample_count"],
+        mean_confidence=report["mean_confidence"],
+        min_confidence=report["min_confidence"],
+        reference_baseline_confidence=report["reference_baseline_confidence"],
+        drop_from_baseline=report["drop_from_baseline"],
+        note=report["note"],
+        limitations=(
+            "Evaluates persisted prediction confidence scores only. Does not measure ground-truth "
+            "accuracy without labeled field outcomes."
+        ),
     )

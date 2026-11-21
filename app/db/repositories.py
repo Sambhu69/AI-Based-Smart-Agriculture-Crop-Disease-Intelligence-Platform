@@ -128,3 +128,19 @@ class TwinScenarioRepository:
 
     def list_by_plot(self, plot_id: int) -> List[TwinScenario]:
         return self.db.query(TwinScenario).filter(TwinScenario.plot_id == plot_id).all()
+
+
+def list_recent_predictions(db: Session, limit: int = 50, module_name: Optional[str] = None) -> List[PredictionRecord]:
+    """Most recent prediction records, optionally filtered by task (module name)."""
+    query = db.query(PredictionRecord)
+    if module_name:
+        query = query.filter(PredictionRecord.task == module_name)
+    return query.order_by(PredictionRecord.created_at.desc(), PredictionRecord.id.desc()).limit(limit).all()
+
+
+def list_recent_twin_scenarios(db: Session, limit: int = 50, module_name: Optional[str] = None) -> List[TwinScenario]:
+    """Most recent twin scenarios, optionally filtered by simulation engine (module name)."""
+    query = db.query(TwinScenario)
+    if module_name:
+        query = query.filter(TwinScenario.simulation_engine == module_name)
+    return query.order_by(TwinScenario.simulated_at.desc(), TwinScenario.id.desc()).limit(limit).all()

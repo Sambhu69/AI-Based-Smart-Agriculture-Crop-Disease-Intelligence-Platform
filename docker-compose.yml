@@ -1,0 +1,35 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smart-ag-api
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=${APP_ENV:-production}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - DATABASE_URL=${DATABASE_URL:-sqlite:///./smart_ag.db}
+      - DEFAULT_DEVICE=${DEFAULT_DEVICE:-cpu}
+    volumes:
+      - ./models:/app/models:ro
+      - ./smart_ag.db:/app/smart_ag.db
+    restart: unless-stopped
+
+  # Optional PostgreSQL service: start with `docker compose --profile postgres up`
+  postgres:
+    image: postgres:16-alpine
+    container_name: smart-ag-postgres
+    profiles: ["postgres"]
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-change_me_in_env}
+      - POSTGRES_DB=${POSTGRES_DB:-smart_ag}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  pg_data:

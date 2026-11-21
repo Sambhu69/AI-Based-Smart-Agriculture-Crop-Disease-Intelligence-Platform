@@ -206,3 +206,46 @@ class IntelligenceAssessmentResponse(BaseModel):
     assistant_response: Optional[Dict[str, Any]] = None
     limitations: str
     record_id: Optional[int] = None
+
+
+# ---------------------------------------------------------------------------
+# Stage 8: Backend & Database Integration Contracts
+# ---------------------------------------------------------------------------
+
+class FarmDetailResponse(FarmResponse):
+    """Farm details including its plots."""
+    plots: List[PlotResponse] = []
+
+
+class HistoryItem(BaseModel):
+    record_type: str  # "prediction" | "twin_scenario"
+    id: int
+    plot_id: Optional[int] = None
+    epistemic_type: str
+    module_name: str  # prediction task or simulation engine
+    model_version: Optional[str] = None
+    timestamp: datetime
+    summary: str
+
+
+class HistoryResponse(BaseModel):
+    count: int
+    limit: int
+    module_name: Optional[str] = None
+    items: List[HistoryItem]
+
+
+# ---------------------------------------------------------------------------
+# Stage 11: MLOps & Drift Monitoring Contracts
+# ---------------------------------------------------------------------------
+
+class MonitoringStatusResponse(BaseModel):
+    status: str  # "normal" | "watch" | "drift_alert"
+    epistemic_type: str = "observed"
+    sample_count: int
+    mean_confidence: Optional[float] = None
+    min_confidence: Optional[float] = None
+    reference_baseline_confidence: float
+    drop_from_baseline: float
+    note: str
+    limitations: str

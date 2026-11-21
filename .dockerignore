@@ -1,0 +1,55 @@
+# Git & VCS
+.git/
+.gitignore
+
+# Python virtual environments & caches
+venv/
+ENV/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Environment secrets & credentials (never bake into image)
+.env
+.env.*
+!.env.example
+*.env
+*.pem
+*.key
+*credentials*.json
+*service-account*.json
+secrets/
+
+# Datasets, raw images, outlier dumps & large checkpoints
+data/
+suspicious_outliers/
+mlruns/
+experiments/
+models/*.pth
+models/*.h5
+models/*.pkl
+
+# Local databases & logs
+*.db
+*.sqlite
+*.sqlite3
+*.log
+logs/
+
+# Frontend build artifacts & node_modules
+node_modules/
+frontend/node_modules/
+frontend/dist/
+*.tsbuildinfo
+
+# IDE & OS
+.vscode/
+.idea/
+.ipynb_checkpoints/
+*.DS_Store
+Thumbs.db
+desktop.ini

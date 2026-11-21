@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
@@ -22,6 +22,12 @@ class Settings(BaseSettings):
     IMAGE_SIZE: int = 224
     MAX_UPLOAD_BYTES: int = 10 * 1024 * 1024  # 10 MB
     DEFAULT_DEVICE: str = "cuda"
+
+    # Optional External API Credentials (loaded strictly from env / .env; never hardcode)
+    NASA_POWER_API_KEY: Optional[str] = None
+    COPERNICUS_CLIENT_ID: Optional[str] = None
+    COPERNICUS_CLIENT_SECRET: Optional[str] = None
+    EARTHDATA_TOKEN: Optional[str] = None
 
     # Default supported classes for PlantVillage disease classifier
     DEFAULT_CLASS_NAMES: List[str] = [
