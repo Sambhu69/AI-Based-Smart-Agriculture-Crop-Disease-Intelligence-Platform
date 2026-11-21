@@ -27,8 +27,8 @@ secrets/
 *.sqlite3
 *.sqlite
 
-# Dataset (too large for git - use Kaggle or manual download)
-data/
+# Dataset (too large for git - anchor to repo root so frontend/src/data/ is tracked)
+/data/
 
 # Model checkpoints & weights
 models/*.pth

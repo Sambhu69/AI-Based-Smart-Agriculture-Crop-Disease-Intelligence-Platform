@@ -191,7 +191,7 @@ async def predict_crop_disease(
         record_id=record.id,
     )
 
-# --- Agronomy & Crop-Irrigation Advisory (Step 6B) ---
+# --- Agronomy & Crop-Irrigation Advisory ---
 @router.post("/recommend/crop-irrigation", response_model=CropIrrigationAdvisoryResponse, tags=["Agronomy Advisory"])
 def recommend_crop_and_irrigation(
     req: CropIrrigationAdvisoryRequest,
@@ -243,15 +243,15 @@ def recommend_crop_and_irrigation(
         record_id=record_id,
     )
 
-# --- Tabular Crop Yield Prediction (Step 6B) ---
+# --- Tabular Crop Yield Prediction ---
 @router.post("/predict/yield", response_model=YieldPredictionResponse, tags=["Yield Prediction"])
 def predict_crop_yield_endpoint(
     req: YieldPredictionRequest,
     db: Session = Depends(get_db),
 ):
     """
-    Predicts expected crop yield (kg/ha and total kg) using the trained Stage 6
-    yield model baseline with epistemic_type="predicted".
+    Predicts expected crop yield (kg/ha and total kg) using the trained Ridge
+    yield baseline with epistemic_type="predicted".
     Gracefully falls back to baseline agronomic heuristics if artifact is missing.
     """
     model_bundle = Path("models/stage6/yield_baseline.joblib")
@@ -309,7 +309,7 @@ def predict_crop_yield_endpoint(
 
 
 # ---------------------------------------------------------------------------
-# Digital Twin Simulation Endpoint (Step 7A)
+# --- Digital Twin Simulation Endpoint ---
 # ---------------------------------------------------------------------------
 
 @router.post(
@@ -400,7 +400,7 @@ def simulate_twin_scenario(
 
 
 # ---------------------------------------------------------------------------
-# Advanced Intelligence & Risk Assessment Endpoint (Step 7B)
+# --- Advanced Intelligence & Risk Assessment Endpoint ---
 # ---------------------------------------------------------------------------
 
 @router.post(
@@ -474,7 +474,7 @@ def assess_intelligence_risk(
 
 
 # ---------------------------------------------------------------------------
-# Stage 8: Farm-scoped observations and unified history
+# --- Farm-Scoped Observations & Unified History ---
 # ---------------------------------------------------------------------------
 
 def _require_plot_in_farm(db: Session, farm_id: int, plot_id: int):
@@ -560,7 +560,7 @@ def get_history(
 
 
 # ---------------------------------------------------------------------------
-# Stage 11: MLOps Drift & Confidence Monitoring Endpoint
+# --- MLOps Drift & Confidence Monitoring Endpoint ---
 # ---------------------------------------------------------------------------
 
 @router.get("/monitoring/status", response_model=MonitoringStatusResponse, tags=["Monitoring"])

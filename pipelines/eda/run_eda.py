@@ -52,9 +52,7 @@ def run_agricultural_eda(
 
     stats: Dict[str, Any] = {}
 
-    # =========================================================================
     # 1. PlantVillage Class Imbalance Analysis
-    # =========================================================================
     if audit_json_path.exists():
         with open(audit_json_path, "r", encoding="utf-8") as f:
             audit_data = json.load(f)
@@ -100,9 +98,7 @@ def run_agricultural_eda(
         plt.close()
         lineage.add_output(fig2_path, "Outliers distribution horizontal bar chart")
 
-    # =========================================================================
     # 2. Outlier Root Causes & Distance Metrics
-    # =========================================================================
     if outlier_csv_path.exists():
         df_out = pd.read_csv(outlier_csv_path)
         stats["total_outliers_in_csv"] = int((df_out["is_outlier"] == True).sum()) if "is_outlier" in df_out.columns else 0
@@ -130,9 +126,7 @@ def run_agricultural_eda(
             plt.close()
             lineage.add_output(fig3_path, "Outlier feature distribution scatter plot")
 
-    # =========================================================================
     # 3. NASA POWER Agroclimatology EDA (Weather & Seasonality)
-    # =========================================================================
     weather_files = list(nasa_power_dir.glob("nasa_power_normalized_*.json"))
     all_weather_records = []
     for wf in weather_files:
@@ -187,9 +181,7 @@ def run_agricultural_eda(
         plt.close()
         lineage.add_output(fig5_path, "Weather correlation matrix heatmap")
 
-    # =========================================================================
     # 4. Tabular Crop Yield & Soil Profile EDA
-    # =========================================================================
     crop_csv_path = tabular_crop_dir / "crop_yields.csv"
     if crop_csv_path.exists():
         df_crops = pd.read_csv(crop_csv_path)

@@ -94,7 +94,7 @@ class DiseasePredictionResponse(BaseModel):
     inference_time_ms: float
     record_id: Optional[int] = None
 
-# Agronomy & Advisory Contracts (Step 6B)
+# Agronomy & Advisory Contracts
 class CropSuitabilityItem(BaseModel):
     crop_type: str
     suitability: str
@@ -129,7 +129,7 @@ class CropIrrigationAdvisoryResponse(BaseModel):
     limitations: str
     record_id: Optional[int] = None
 
-# Tabular Yield Prediction Contracts (Step 6B)
+# Tabular Yield Prediction Contracts
 class YieldPredictionRequest(BaseModel):
     crop_type: str = Field(..., description="Crop type (e.g., Tomato, Potato, Pepper)")
     harvest_year: int = Field(2025, ge=1900, le=2100, description="Target harvest calendar year")
@@ -152,7 +152,7 @@ class YieldPredictionResponse(BaseModel):
 
 
 # ---------------------------------------------------------------------------
-# Digital Twin Simulation Contracts (Step 7A)
+# Digital Twin Simulation Contracts
 # ---------------------------------------------------------------------------
 
 class TwinSimulationRequest(BaseModel):
@@ -186,7 +186,7 @@ class TwinSimulationResponse(BaseModel):
 
 
 # ---------------------------------------------------------------------------
-# Advanced Intelligence Contracts (Step 7B)
+# Advanced Intelligence Contracts
 # ---------------------------------------------------------------------------
 
 class IntelligenceAssessmentRequest(BaseModel):
@@ -209,7 +209,7 @@ class IntelligenceAssessmentResponse(BaseModel):
 
 
 # ---------------------------------------------------------------------------
-# Stage 8: Backend & Database Integration Contracts
+# Farm Detail & Unified History Contracts
 # ---------------------------------------------------------------------------
 
 class FarmDetailResponse(FarmResponse):
@@ -236,7 +236,7 @@ class HistoryResponse(BaseModel):
 
 
 # ---------------------------------------------------------------------------
-# Stage 11: MLOps & Drift Monitoring Contracts
+# MLOps & Drift Monitoring Contracts
 # ---------------------------------------------------------------------------
 
 class MonitoringStatusResponse(BaseModel):
