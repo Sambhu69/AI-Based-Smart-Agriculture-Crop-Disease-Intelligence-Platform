@@ -9,6 +9,17 @@ __pycache__/
 # Virtual environment
 venv/
 ENV/
+env/
+
+# Environment secrets
+.env
+.env.local
+*.env
+
+# SQLite and databases
+*.db
+*.sqlite3
+*.sqlite
 
 # Dataset (too large for git - use Kaggle or manual download)
 data/
@@ -34,11 +45,13 @@ notebooks/.ipynb_checkpoints/
 Thumbs.db
 desktop.ini
 
-# Logs
+# Logs & temp
 *.log
 logs/
+.pytest_cache/
+.coverage
+htmlcov/
 
 # Temporary scripts
 check_deps.py
 inspect_data.py
-
