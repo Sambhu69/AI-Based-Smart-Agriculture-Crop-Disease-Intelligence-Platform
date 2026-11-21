@@ -279,12 +279,17 @@ export const PlotDetailPage: React.FC = () => {
                 <XAxis dataKey="idx" tick={{ fontSize: 11 }} />
                 <YAxis tick={{ fontSize: 11 }} />
                 <Tooltip
+                  cursor={{ fill: 'rgba(148, 163, 184, 0.12)' }}
                   contentStyle={{
-                    backgroundColor: 'var(--bg-surface)',
-                    borderColor: 'var(--border-default)',
+                    backgroundColor: 'var(--bg-elevated)',
+                    borderColor: 'var(--border-strong)',
                     borderRadius: '0.75rem',
                     fontSize: '12px',
+                    color: 'var(--text-primary)',
+                    boxShadow: 'var(--shadow-modal)',
                   }}
+                  labelStyle={{ color: 'var(--text-primary)', fontWeight: 700 }}
+                  itemStyle={{ color: 'var(--text-secondary)' }}
                 />
                 <Line
                   type="monotone"

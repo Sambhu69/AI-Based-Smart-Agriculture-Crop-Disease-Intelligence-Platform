@@ -456,12 +456,17 @@ export const DashboardPage: React.FC = () => {
                       tick={{ fontSize: 11, fill: 'var(--text-secondary)' }}
                     />
                     <Tooltip
+                      cursor={{ fill: 'rgba(148, 163, 184, 0.12)' }}
                       contentStyle={{
-                        backgroundColor: 'var(--bg-surface)',
-                        borderColor: 'var(--border-default)',
+                        backgroundColor: 'var(--bg-elevated)',
+                        borderColor: 'var(--border-strong)',
                         borderRadius: '0.75rem',
                         fontSize: '12px',
+                        color: 'var(--text-primary)',
+                        boxShadow: 'var(--shadow-modal)',
                       }}
+                      labelStyle={{ color: 'var(--text-primary)', fontWeight: 700 }}
+                      itemStyle={{ color: 'var(--text-secondary)' }}
                     />
                     <Bar dataKey="count" name="Logged Runs" radius={[6, 6, 0, 0]}>
                       {moduleBreakdown.map((entry, idx) => (
@@ -511,35 +516,55 @@ export const DashboardPage: React.FC = () => {
               />
             ) : (
               <div className="space-y-3">
-                {/* Farm Switcher Pills */}
-                <div className="flex flex-wrap gap-1.5">
-                  {farms.map((f) => {
-                    const isSelected = f.id === effectiveFarmId;
-                    return (
-                      <button
-                        key={f.id}
-                        type="button"
-                        onClick={() => setSelectedFarmId(f.id)}
-                        className="px-3 py-1.5 rounded-xl text-xs font-semibold border transition-colors"
-                        style={
-                          isSelected
-                            ? {
-                                backgroundColor: 'var(--brand-primary)',
-                                color: '#ffffff',
-                                borderColor: 'var(--brand-primary)',
-                              }
-                            : {
-                                backgroundColor: 'var(--bg-subtle)',
-                                color: 'var(--text-primary)',
-                                borderColor: 'var(--border-default)',
-                              }
-                        }
-                      >
-                        {f.name}
-                      </button>
-                    );
-                  })}
-                </div>
+                {/* Farm Switcher (capped pills for <=4 farms, clean select dropdown for 5+) */}
+                {farms.length <= 4 ? (
+                  <div className="flex flex-wrap gap-1.5">
+                    {farms.map((f) => {
+                      const isSelected = f.id === effectiveFarmId;
+                      return (
+                        <button
+                          key={f.id}
+                          type="button"
+                          onClick={() => setSelectedFarmId(f.id)}
+                          className="px-3 py-1.5 rounded-xl text-xs font-semibold border transition-colors"
+                          style={
+                            isSelected
+                              ? {
+                                  backgroundColor: 'var(--brand-primary)',
+                                  color: '#ffffff',
+                                  borderColor: 'var(--brand-primary)',
+                                }
+                              : {
+                                  backgroundColor: 'var(--bg-subtle)',
+                                  color: 'var(--text-primary)',
+                                  borderColor: 'var(--border-default)',
+                                }
+                          }
+                        >
+                          {f.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <label htmlFor="dashboard-farm-switcher" className="text-xs font-semibold shrink-0" style={{ color: 'var(--text-secondary)' }}>
+                      Active Farm:
+                    </label>
+                    <select
+                      id="dashboard-farm-switcher"
+                      value={effectiveFarmId ?? ''}
+                      onChange={(e) => setSelectedFarmId(e.target.value ? Number(e.target.value) : null)}
+                      className="input-field text-xs py-1.5 min-h-[38px]"
+                    >
+                      {farms.map((f) => (
+                        <option key={f.id} value={f.id}>
+                          {f.name} {f.location ? `(${f.location})` : ''}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
 
                 {/* Plot List for Selected Farm */}
                 {activeFarmDetail && activeFarmDetail.plots.length > 0 ? (
